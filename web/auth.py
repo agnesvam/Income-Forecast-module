@@ -1,6 +1,12 @@
 import sys
+from datamallet.visualization import AutoPlot
+import pandas as pd
 from flask import Blueprint, flash, g,session,render_template, request, redirect,url_for
 import cx_Oracle
+import json
+import plotly
+import plotly.express as px
+
 cx_Oracle.init_oracle_client(lib_dir=r"C:\Oracle\product\19.0.0\client_1\bin")
 dsn_tns = cx_Oracle.makedsn('127.0.0.1', '4000', service_name='XE') 
 conn = cx_Oracle.connect(user=r'alcs', password='alcs', dsn=dsn_tns)
@@ -70,8 +76,19 @@ def income():
 
     #function to get previous income
     re=get_prev_income(g.com, timescale,0,cust)
+    idx = [x[0] for x in re]
+    vals = [x[1] for x in re]
+    df=pd.DataFrame({'date':idx, 'income':vals})
+    df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
+    # fig = px.bar(df, x=df['date'], y=df['income'],  barmode='group')
+    # graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    autoplot= AutoPlot(df=df, filename='basic')
+    autoplot.show()
+    return render_template("basic.html")
 
-    return render_template("forecast.html",cust=cust, timescale=timescale, model=option, supp=g.com, res=re ,len =len(re) )
+    
+
+    #return render_template("forecast.html",cust=cust, timescale=timescale, model=option, supp=g.com, res=re ,len =len(re) )
 
 
   return render_template('loged.html')
