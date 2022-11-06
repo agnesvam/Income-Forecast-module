@@ -18,22 +18,25 @@
           <div class="column is-half">
             <form method="POST">
               <div class="field">
-                <label class="label">Username</label>
-                <div class="control has-icons-left has-icons-right">
-                  <input class="input" type="text" name="comid" placeholder="Username">
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-user"></i>
-                  </span>
-                </div>
+                
+                <label class="label">Company</label>
+                <SELECT name="com">
+                  {% for j in companies %}
+                    <OPTION value={{j}}>{{j}}</OPTION>
+                  {% endfor %}
+                  </SELECT>
+                  </p>
               </div>
+
+
               <div class="field">
-                <label class="label">Password</label>
-                <p class="control has-icons-left">
-                  <input class="input" type="password" name="usrid" placeholder="Password">
+                <label class="label">User Email</label>
+
+                  <input class="input" type="text" name="usremail" placeholder="email">
                   <span class="icon is-small is-left">
                     <i class="fas fa-lock"></i>
                   </span>
-                </p>
+            
               </div>
               <div class="field">
                 <p class="control">
@@ -41,6 +44,7 @@
                     Login
                   </button>
                 </p>
+              
               </div>
             </form>
           </div>
