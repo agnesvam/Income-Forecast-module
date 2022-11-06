@@ -18,17 +18,12 @@
           <div class="column is-half">
             <form method="POST">
               <div class="field">
-                
                 <label class="label">Company</label>
-                <SELECT name="com">
-                  {% for j in companies %}
-                    <OPTION value={{j}}>{{j}}</OPTION>
-                  {% endfor %}
-                  </SELECT>
-                  </p>
+            
+                  <input class="input" type="text" name="comid" placeholder="company">
+                 
+                
               </div>
-
-
               <div class="field">
                 <label class="label">User Email</label>
 

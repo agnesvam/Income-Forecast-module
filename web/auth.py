@@ -9,20 +9,20 @@ auth = Blueprint('auth', __name__)
 
 @auth.before_request
 def before_request():
-  cur=conn.cursor()
-  cur.execute("""select 
-      regexp_replace(a.com_name,
-                      '[^\r -~]',
-                      '')
-from   als_companies a
-where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
-  res=cur.fetchall()
-  ret= list(map(lambda x: x[0], res))
-  return render_template("login.html", companies=ret)
+#   cur=conn.cursor()
+#   cur.execute("""select 
+#       regexp_replace(a.com_name,
+#                       '[^\r -~]',
+#                       '')
+# from   als_companies a
+# where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
+#   res=cur.fetchall()
+#   ret= list(map(lambda x: x[0], res))
+#   return render_template("login.html", companies=ret)
 
-  # if 'user_id' in session:
-  #   #check if user id exists in useers
-  #   g.user=session['user_id']
+  if 'user_id' in session:
+    #check if user id exists in useers
+    g.user=session['user_id']
 
 
 @auth.route('/login', methods=['GET','POST'])
@@ -30,15 +30,11 @@ def login():
   
     if request.method=='POST':
         session.pop('user_id',None)
-       # company=request.form['comid']
+        company=request.form['comid']
         user_email=request.form['usremail']
         cur=conn.cursor()
-        
         usr_id= get_user_id(user_email,cur)
-        company= get_com_id(request.form.get('com'),cur)
-  
-       
-
+        
         outVal=cur.var(int)
         sql="""
    begin
@@ -50,13 +46,11 @@ def login():
 
         if outVal.getvalue()==1 :
            session['user_id']= usr_id
-
            return redirect(url_for('auth.income'))
         else:
 
           #  cur.close()
           #  conn.close()
-
           return redirect(url_for('auth.login'))
        
     return render_template("login.html" )
