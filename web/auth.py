@@ -20,9 +20,10 @@ def before_request():
 #   ret= list(map(lambda x: x[0], res))
 #   return render_template("login.html", companies=ret)
 
-  if 'user_id' in session:
+  if 'user_id' in session and 'com_id' in session:
     #check if user id exists in useers
     g.user=session['user_id']
+    g.com= session['com_id']
 
 
 @auth.route('/login', methods=['GET','POST'])
@@ -46,6 +47,7 @@ def login():
 
         if outVal.getvalue()==1 :
            session['user_id']= usr_id
+           session['com_id'] =company
            return redirect(url_for('auth.income'))
         else:
 
@@ -55,10 +57,23 @@ def login():
        
     return render_template("login.html" )
         
-@auth.route('/income')
+@auth.route('/income' , methods=['GET','POST'])
 def income():
   if not g.user:
+
     return redirect(url_for('auth.login'))
+  if request.method=='POST':
+    cust=request.form['cust']
+    timescale= request.form.get('timescale')
+    option = request.form['options']
+    all=0
+
+    #function to get previous income
+    re=get_prev_income(g.com, timescale,0,cust)
+
+    return render_template("forecast.html",cust=cust, timescale=timescale, model=option, supp=g.com, res=re ,len =len(re) )
+
+
   return render_template('loged.html')
 
 
@@ -87,3 +102,24 @@ where  a.com_name like :com_name
       
   ret= res[0]
   return ret
+
+def get_prev_income(supp_id,timescale, all_cust, cust_name ):
+  cur=conn.cursor()
+  outVal=cur.var(cx_Oracle.CURSOR)
+
+  sql="""
+    declare
+  -- Boolean parameters are translated from/to integers: 
+  -- 0/1/null <--> false/true/null 
+  p_all_customers boolean := sys.diutil.int_to_bool(:p_all_customers);
+     begin
+      als_stat.find_prev_income(p_label_timescale => :p_label_timescale,
+                            p_supplier_id => :p_supplier_id,
+                            p_all_customers => p_all_customers,
+                            p_customer_name => :p_customer_name,
+                            v_res_crs => :v_res_crs);
+       end;
+     """
+  cur.execute(sql,p_label_timescale=timescale,p_supplier_id=supp_id,p_all_customers=all_cust,p_customer_name=cust_name,v_res_crs=outVal)
+  res=outVal.getvalue().fetchall()
+  return res
