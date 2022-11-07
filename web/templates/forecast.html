@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
 </head>
 <body>
-    Customer id {{ cust }}.
+    Customer  {{ cust }}.
     Timescale {{ timescale }}.
     Forecast model {{ model }}.
     Logged in supplier id {{ supp }}.
     data len{{ len }}.
+    is checkbox check for all cust: {{all}}.
     {% for x in res %}
     <p>{{ x }} </p>
 {% endfor %}

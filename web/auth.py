@@ -72,23 +72,28 @@ def income():
     cust=request.form['cust']
     timescale= request.form.get('timescale')
     option = request.form['options']
-    all=0
+    if request.form.get('all_cust'):
+      all_cust=1
+    else:
+      all_cust=0
+
 
     #function to get previous income
-    re=get_prev_income(g.com, timescale,0,cust)
+    re=get_prev_income(g.com, timescale,all_cust,cust)
     idx = [x[0] for x in re]
     vals = [x[1] for x in re]
     df=pd.DataFrame({'date':idx, 'income':vals})
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
+
     # fig = px.bar(df, x=df['date'], y=df['income'],  barmode='group')
     # graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     autoplot= AutoPlot(df=df, filename='basic')
     autoplot.show()
-    return render_template("basic.html")
+    #return render_template("basic.html")
 
     
 
-    #return render_template("forecast.html",cust=cust, timescale=timescale, model=option, supp=g.com, res=re ,len =len(re) )
+    return render_template("forecast.html",all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=re ,len =len(re) )
 
 
   return render_template('loged.html')
