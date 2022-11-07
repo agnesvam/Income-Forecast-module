@@ -1,6 +1,6 @@
 import sys
-from datamallet.visualization import AutoPlot
 import pandas as pd
+from datetime import datetime
 from flask import Blueprint, flash, g,session,render_template, request, redirect,url_for
 import cx_Oracle
 import json
@@ -84,16 +84,11 @@ def income():
     vals = [x[1] for x in re]
     df=pd.DataFrame({'date':idx, 'income':vals})
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
+    df['date'] = df['date'].astype(str)
 
-    # fig = px.bar(df, x=df['date'], y=df['income'],  barmode='group')
-    # graphJSON = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    autoplot= AutoPlot(df=df, filename='basic')
-    autoplot.show()
-    #return render_template("basic.html")
+   
 
-    
-
-    return render_template("forecast.html",all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=re ,len =len(re) )
+    return render_template("forecast.html",labels=idx, val=vals,all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html() ,len =len(re) )
 
 
   return render_template('loged.html')
