@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import pandas as pd
 from datetime import datetime
 from flask import Blueprint, flash, g,session,render_template, request, redirect,url_for
@@ -6,6 +7,7 @@ import cx_Oracle
 import json
 import plotly
 import plotly.express as px
+from pmdarima.arima import auto_arima
 
 cx_Oracle.init_oracle_client(lib_dir=r"C:\Oracle\product\19.0.0\client_1\bin")
 dsn_tns = cx_Oracle.makedsn('127.0.0.1', '4000', service_name='XE') 
@@ -84,12 +86,27 @@ def income():
     vals = [x[1] for x in re]
     df=pd.DataFrame({'date':idx, 'income':vals})
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
-    df['date'] = df['date'].astype(str)
+   #df['date'] = df['date']
+   #resampling for quarter
+    df = df.resample('Q',on='date').sum()
+    #------train/test split. build model on train data. 
+    train_size = int(len(df) * 0.8)
+    train, test = df[0:train_size], df[train_size:]
+    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=4,
+                             start_P=0, seasonal=True, d=1, D=1, trace=True,
+                             error_action='ignore')
+    pred = model.predict(n_periods=test.shape[0]+5)
+    dd=(pd.to_datetime(pred.index.values , format='%Y-%m-%d')).astype(str).tolist()
+    
+    d=list(pred.values)
+    print('sssssss')
+     
+    print(pred.index)
 
-   
+    print('sssssss')  
 
-    return render_template("forecast.html",labels=idx, val=vals,all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html() ,len =len(re) )
-
+    return render_template("forecast.html",lab= dd, val=d,
+    all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html() ,len =len(pred) )
 
   return render_template('loged.html')
 
