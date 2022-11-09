@@ -24,14 +24,34 @@ var ctx= document.getElementById("linechart").getContext("2d");
 var lineChart=new Chart(ctx,{
     type:'line',
     data:{
-        labels:{{ lab | safe }},
+       
         datasets: [
         {
             labels: "data points",
-            data: {{ val | safe }},
+            label: 'train',
+            data: {{ trainD | safe }},
+            borderColor: "#00F",
             fill: false
-        }]
-    }, options:{
+        },
+        {
+            labels: "data points",
+            label: 'test',
+            borderColor: "#0D0",
+            data: {{ testD | safe }},
+            fill: false
+        },       
+        {
+            labels: "data points",
+            label: 'pred',
+            borderColor: "#F00",
+            data: {{ predD | safe }},
+            fill: false
+        }
+        
+        
+        ]
+    },
+     options:{
         responsive: false,
         scales: {
             x: {
