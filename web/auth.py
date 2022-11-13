@@ -1,4 +1,5 @@
 import sys
+import model
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -86,39 +87,29 @@ def income():
     vals = [x[1] for x in re]
     df=pd.DataFrame({'date':idx, 'income':vals})
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
-   #df['date'] = df['date']
    #resampling for quarter
     df = df.resample('Q',on='date').sum()
-    #------train/test split. build model on train data. 
+    
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=4,
-                             start_P=0, seasonal=True, d=1, D=1, trace=True,
-                             error_action='ignore')
-    pred = model.predict(n_periods=test.shape[0]+5)
-   
-    TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
-    testVal = dict(map(lambda i,j : (i,j) , TestKeys,list(test['income'])))
+
+    if option == 'arma':
+     predVal,trainVal,testVal=model.ARMA(df,train,test)
+     return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
+     all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html())
 
 
-    TrainKeys=(pd.to_datetime(train.index.values , format='%Y-%m-%d')).astype(str).tolist()
-    trainVal = dict(map(lambda i,j : (i,j) , TrainKeys,list(train['income'])))
+    if option == 'arima':
+     predVal,trainVal,testVal=model.ARIMA(df,train,test)
+     return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
+     all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html())
 
-   
-    PredKeys=(pd.to_datetime(pred.index.values , format='%Y-%m-%d')).astype(str).tolist()
-    predVal = dict(map(lambda i,j : (i,j) , PredKeys,pred.values))
+    if option == 'sarima':
+     predVal,trainVal,testVal=model.SARIMA(df,train,test)
+     return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
+     all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html())
 
-    
-
-
- 
-
-    
-
-   
-    return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
-    all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html() ,len =len(pred) )
 
   return render_template('loged.html')
 
