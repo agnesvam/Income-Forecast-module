@@ -2,8 +2,11 @@ from pmdarima.arima import auto_arima
 import pandas as pd
 from flask import Blueprint, flash, g,session,render_template, request, redirect,url_for
 
-def ARMA (df, train, test):
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=4,
+def ARMA (df,timescale):
+    train_size = int(len(df) * 0.8)
+    train = df[0:train_size]
+    test=df[train_size:]
+    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale),
                              start_P=0, seasonal=False, d=0, 
                              stepwise=True , trace=True,error_action='ignore')
     print(model.summary())
@@ -25,12 +28,14 @@ def ARMA (df, train, test):
     
 
 
-def ARIMA(df,train,test):
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=4, start_P=0, seasonal=False, d=1, D=1,  stepwise=True ,trace=True,
+def ARIMA(df,timescale):
+    train_size = int(len(df) * 0.8)
+    train = df[0:train_size]
+    test=df[train_size:]
+    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale), start_P=0, seasonal=False, d=1, D=1,  stepwise=True ,trace=True,
                              error_action='ignore')
 
     pred = model.predict(n_periods=test.shape[0]+5)
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=4, start_P=0, seasonal=False, d=0, stepwise=True , trace=True,  error_action='ignore')
     print(model.summary())
     print('model seasonal order', model.seasonal_order)
     pred = model.predict(n_periods=test.shape[0]+5)
@@ -48,16 +53,17 @@ def ARIMA(df,train,test):
     return predVal,trainVal,testVal
 
 
-def SARIMA(df,train,test):
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=4,
+def SARIMA(df,timescale):
+    train_size = int(len(df) * 0.8)
+    train = df[0:train_size]
+    test=df[train_size:]
+    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale),
                              start_P=0, seasonal=True, d=1, D=1, trace=True,
                              error_action='ignore')
 
  
     pred = model.predict(n_periods=test.shape[0]+5)
  
-  
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=4, start_P=0, seasonal=False, d=0, stepwise=True , trace=True,  error_action='ignore')
     print(model.summary())
     print('model seasonal order', model.seasonal_order)
     pred = model.predict(n_periods=test.shape[0]+5)
@@ -74,3 +80,27 @@ def SARIMA(df,train,test):
     predVal = dict(map(lambda i,j : (i,j) , PredKeys,pred.values))
     return predVal,trainVal,testVal
 
+
+def resampling(scale):
+    if scale =='year':
+        return 'A'
+    elif scale == 'quarter':
+        return 'Q'
+    elif scale == 'month':
+        return 'M'
+    elif scale == 'week':
+        return 'W'
+    else:
+        return 0
+
+def get_m_value(scale):
+    if scale =='year':
+        return 1
+    elif scale == 'quarter':
+        return 4
+    elif scale == 'month':
+        return 12
+    elif scale == 'week':
+        return 52
+    else:
+        return 0
