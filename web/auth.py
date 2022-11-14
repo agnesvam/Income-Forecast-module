@@ -91,16 +91,18 @@ def income():
     vals = [x[1] for x in re]
     df=pd.DataFrame({'date':idx, 'income':vals})
 
-    if len(re) < 5:
-        flash('You were successfully logged in')
-        
+    if len(re) ==0:
+        flash('Not enough info', 'info')
+        return render_template('loged.html')
+
+       
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
     df=df.resample(model.resampling(timescale),on='date').sum()
     
     if  df.shape[0] < 5:
-        flash('You were successfully logged in')
-       
-
+        flash('Not enough info')
+        return render_template('loged.html')
+      
     if option == 'arma':
      predVal,trainVal,testVal=model.ARMA(df,timescale)
      return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
