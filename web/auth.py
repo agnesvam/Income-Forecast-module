@@ -21,16 +21,6 @@ auth = Blueprint('auth', __name__)
 
 @auth.before_request
 def before_request():
-#   cur=conn.cursor()
-#   cur.execute("""select 
-#       regexp_replace(a.com_name,
-#                       '[^\r -~]',
-#                       '')
-# from   als_companies a
-# where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
-#   res=cur.fetchall()
-#   ret= list(map(lambda x: x[0], res))
-#   return render_template("login.html", companies=ret)
 
   if 'user_id' in session and 'com_id' in session:
     #check if user id exists in useers
@@ -72,8 +62,8 @@ def login():
 @auth.route('/income' , methods=['GET','POST'])
 def income():
   if not g.user:
-
     return redirect(url_for('auth.login'))
+
   if request.method=='POST':
     cust=request.form['cust']
     timescale= request.form.get('timescale')
@@ -83,9 +73,13 @@ def income():
     else:
       all_cust=0
 
+    if (all_cust==1) and (cust is not ''):
+      flash('If customer is chosen- total for customers checkbox should not be checked', 'info')
+      return render_template('loged.html')
+
+
 
     #function to get previous income
-    
     re=get_prev_income(g.com, timescale,all_cust,cust,conn)
     idx = [x[0] for x in re]
     vals = [x[1] for x in re]
@@ -105,22 +99,37 @@ def income():
       
     if option == 'arma':
      predVal,trainVal,testVal=model.ARMA(df,timescale)
-     return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
-     all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html())
+     return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,all=all_cust,cust=cust,timescale=timescale,model=option))
 
     if option == 'arima':
      predVal,trainVal,testVal=model.ARIMA(df,timescale)
-     return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
-     all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html())
+     return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,all=all_cust,cust=cust,timescale=timescale,model=option))
 
     if option == 'sarima':
      predVal,trainVal,testVal=model.SARIMA(df,timescale)
-     return render_template("forecast.html",  predD=predVal , trainD=trainVal,testD=testVal,
-     all=all_cust,cust=cust, timescale=timescale, model=option, supp=g.com, res=df.to_html())
+     return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,all=all_cust,cust=cust,timescale=timescale,model=option))
+     
 
 
   return render_template('loged.html')
 
+
+@auth.route('/forecast/model' , methods=['GET','POST'])
+def forecast():
+
+  if request.method=='GET':
+    return render_template("forecast.html",  predD=request.args.get('predD') , trainD=request.args.get('trainD'),
+  testD=request.args.get('testD'),
+  all=request.args.get('all'),cust=request.args.get('cust'), 
+  timescale=request.args.get('timescale'), model=request.args.get('model'), supp=g.com)
+
+  if request.form['action'] == 'excel':
+    model.to_csv(request.args.get('trainD'),request.args.get('predD'))
+    flash('saved to CSV file')
+    return render_template("forecast.html",  predD=request.args.get('predD') , trainD=request.args.get('trainD'),
+    testD=request.args.get('testD'),
+    all=request.args.get('all'),cust=request.args.get('cust'), 
+    timescale=request.args.get('timescale'), model=request.args.get('model'), supp=g.com)
 
         
 def get_user_id(email,cur):
@@ -147,24 +156,3 @@ where  a.com_name like :com_name
       
   ret= res[0]
   return ret
-
-# def get_prev_income(supp_id,timescale, all_cust, cust_name ):
-#   cur=conn.cursor()
-#   outVal=cur.var(cx_Oracle.CURSOR)
-
-#   sql="""
-#     declare
-#   -- Boolean parameters are translated from/to integers: 
-#   -- 0/1/null <--> false/true/null 
-#   p_all_customers boolean := sys.diutil.int_to_bool(:p_all_customers);
-#      begin
-#       als_stat.find_prev_income(p_label_timescale => :p_label_timescale,
-#                             p_supplier_id => :p_supplier_id,
-#                             p_all_customers => p_all_customers,
-#                             p_customer_name => :p_customer_name,
-#                             v_res_crs => :v_res_crs);
-#        end;
-#      """
-#   cur.execute(sql,p_label_timescale=timescale,p_supplier_id=supp_id,p_all_customers=all_cust,p_customer_name=cust_name,v_res_crs=outVal)
-#   res=outVal.getvalue().fetchall()
-#   return res

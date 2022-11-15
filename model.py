@@ -1,6 +1,9 @@
-from pmdarima.arima import auto_arima
 import pandas as pd
-from flask import Blueprint, flash, g,session,render_template, request, redirect,url_for
+import ast
+from flask import (Blueprint, flash, g, redirect, render_template, request,
+                   session, url_for)
+from pmdarima.arima import auto_arima
+
 
 def ARMA (df,timescale):
     train_size = int(len(df) * 0.8)
@@ -71,7 +74,6 @@ def SARIMA(df,timescale):
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
     testVal = dict(map(lambda i,j : (i,j) , TestKeys,list(test['income'])))
 
-
     TrainKeys=(pd.to_datetime(train.index.values , format='%Y-%m-%d')).astype(str).tolist()
     trainVal = dict(map(lambda i,j : (i,j) , TrainKeys,list(train['income'])))
 
@@ -104,3 +106,13 @@ def get_m_value(scale):
         return 52
     else:
         return 0
+
+def to_csv(df,df1):
+
+    T=ast.literal_eval(df)
+    P=ast.literal_eval(df1)
+    df= {**T, **P}
+    with open("prediction.csv", 'w') as file:
+     for key, value in df.items():
+        file.write(f"{key},{value}\n")
+   
