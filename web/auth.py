@@ -65,6 +65,7 @@ def income():
     return redirect(url_for('auth.login'))
 
   if request.method=='POST':
+    session['df']=None
     cust=request.form.get('com_select')
     timescale= request.form.get('timescale')
     option = request.form['options']
@@ -91,10 +92,9 @@ def income():
         flash('Not enough info', 'info')
         return render_template('loged.html', com=coms)
 
-       
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
     df=df.resample(model.resampling(timescale),on='date').sum()
-    
+  
     if  df.shape[0] < 5:
         flash('Not enough info')
         return render_template('loged.html',com=coms)
@@ -133,7 +133,10 @@ def forecast():
     all=request.args.get('all'),cust=request.args.get('cust'), 
     timescale=request.args.get('timescale'), model=request.args.get('model'), supp=g.com)
 
-        
+  if request.form['action'] == 'decomposition':
+    model.decomposition(request.args.get('trainD'),request.args.get('testD'))
+    return render_template('decompose.html', name = 'new_plot', url ='web\static\plot.png')
+   
 def get_user_id(email,cur):
   sql=""" select a.uem_usr_id
 from   als_user_emails a
