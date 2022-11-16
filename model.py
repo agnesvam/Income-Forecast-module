@@ -1,8 +1,12 @@
 import pandas as pd
 import ast
+import matplotlib.pyplot as plt
 from flask import (Blueprint, flash, g, redirect, render_template, request,
                    session, url_for)
 from pmdarima.arima import auto_arima
+import statsmodels.api as sm
+import io
+import base64
 
 
 def ARMA (df,timescale):
@@ -108,7 +112,6 @@ def get_m_value(scale):
         return 0
 
 def to_csv(df,df1):
-
     T=ast.literal_eval(df)
     P=ast.literal_eval(df1)
     df= {**T, **P}
@@ -116,3 +119,16 @@ def to_csv(df,df1):
      for key, value in df.items():
         file.write(f"{key},{value}\n")
    
+def decomposition(df,df1):
+    T=ast.literal_eval(df)
+    P=ast.literal_eval(df1)
+    df= {**T, **P}
+    df= pd.DataFrame(df.items(),columns=['date', 'income'])
+    
+    df['date'] = (pd.to_datetime(df['date'], format='%Y-%m-%d'))
+    #df=df.set_index('date',inplace=True)
+    print(df)
+    
+    decomp=sm.tsa.seasonal_decompose(df['income'], model='additive',period=1)
+    plt.savefig('web\static\plot.png')
+    
