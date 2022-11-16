@@ -33,11 +33,13 @@ def login():
   
     if request.method=='POST':
         session.pop('user_id',None)
-        company=request.form['comid']
+        company=request.form.get('com_select')
         user_email=request.form['usremail']
         cur=conn.cursor()
+
         usr_id= get_user_id(user_email,cur)
-        
+        com_id=get_com_id( company,cur)
+
         outVal=cur.var(int)
         sql="""
    begin
@@ -45,19 +47,17 @@ def login():
      (:rep,:com,:usr));
    end;
   """
-        cur.execute(sql,outVal=outVal,rep='INCOME', com=company,usr=usr_id)
+        cur.execute(sql,outVal=outVal,rep='INCOME', com=com_id,usr=usr_id)
 
         if outVal.getvalue()==1 :
            session['user_id']= usr_id
-           session['com_id'] =company
+           session['com_id'] =com_id
            return redirect(url_for('auth.income'))
         else:
-
-          #  cur.close()
-          #  conn.close()
           return redirect(url_for('auth.login'))
        
-    return render_template("login.html" )
+    coms=get_all_com()
+    return render_template("login.html", com=coms )
         
 @auth.route('/income' , methods=['GET','POST'])
 def income():
@@ -65,18 +65,20 @@ def income():
     return redirect(url_for('auth.login'))
 
   if request.method=='POST':
-    cust=request.form['cust']
+    cust=request.form.get('com_select')
     timescale= request.form.get('timescale')
     option = request.form['options']
+    #all companies for dropdown/
+    coms=get_all_com()
+
     if request.form.get('all_cust'):
       all_cust=1
     else:
       all_cust=0
 
-    if (all_cust==1) and (cust is not ''):
+    if (all_cust==1) and (cust != ''):
       flash('If customer is chosen- total for customers checkbox should not be checked', 'info')
-      return render_template('loged.html')
-
+      return render_template('loged.html',com=coms)
 
 
     #function to get previous income
@@ -87,7 +89,7 @@ def income():
 
     if len(re) ==0:
         flash('Not enough info', 'info')
-        return render_template('loged.html')
+        return render_template('loged.html', com=coms)
 
        
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
@@ -95,7 +97,7 @@ def income():
     
     if  df.shape[0] < 5:
         flash('Not enough info')
-        return render_template('loged.html')
+        return render_template('loged.html',com=coms)
       
     if option == 'arma':
      predVal,trainVal,testVal=model.ARMA(df,timescale)
@@ -110,8 +112,8 @@ def income():
      return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,all=all_cust,cust=cust,timescale=timescale,model=option))
      
 
-
-  return render_template('loged.html')
+  coms=get_all_com()
+  return render_template('loged.html', com=coms)
 
 
 @auth.route('/forecast/model' , methods=['GET','POST'])
@@ -155,4 +157,16 @@ where  a.com_name like :com_name
   res=cur.fetchone()
       
   ret= res[0]
+  return ret
+
+def get_all_com():
+  cur=conn.cursor()
+  cur.execute("""select 
+      regexp_replace(a.com_name,
+                      '[^\r -~]',
+                      '')
+from   als_companies a
+where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
+  res=cur.fetchall()
+  ret= list(map(lambda x: x[0], res))
   return ret

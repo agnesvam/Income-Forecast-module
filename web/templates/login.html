@@ -19,17 +19,16 @@
             <form method="POST">
               <div class="field">
                 <label class="label">Company</label>
-            
-                  <input class="input" type="text" name="comid" placeholder="company">
-                 
-                
+                <select class="dropdown-item" name="com_select" style="color: black;" id="coms">
+                  {% for o in com %}
+                          <option value="{{ o }}">{{ o }}</option>
+                  {% endfor %}
+                </select>
               </div>
+
               <div class="field">
                 <label class="label">User Email</label>
-
                   <input class="input" type="text" name="usremail" placeholder="email">
-          
-            
               </div>
               <div class="field">
                 <p class="control">
