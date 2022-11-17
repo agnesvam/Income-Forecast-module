@@ -119,16 +119,16 @@ def to_csv(df,df1):
      for key, value in df.items():
         file.write(f"{key},{value}\n")
    
-def decomposition(df,df1):
+def decomposition(df,df1,timescale):
     T=ast.literal_eval(df)
     P=ast.literal_eval(df1)
     df= {**T, **P}
     df= pd.DataFrame(df.items(),columns=['date', 'income'])
     
     df['date'] = (pd.to_datetime(df['date'], format='%Y-%m-%d'))
-    #df=df.set_index('date',inplace=True)
-    print(df)
-    
-    decomp=sm.tsa.seasonal_decompose(df['income'], model='additive',period=1)
+    df=df.resample(resampling(timescale),on='date').sum()
+    #print(df)
+    decomp=sm.tsa.seasonal_decompose(df, model='additive',period=1)
+    fig=decomp.plot()
     plt.savefig('web\static\plot.png')
     

@@ -115,10 +115,13 @@ def income():
   coms=get_all_com()
   return render_template('loged.html', com=coms)
 
+@auth.route('/import' , methods=['GET','POST'])
+def imported():
+  return render_template('import.html')
 
-@auth.route('/forecast/model' , methods=['GET','POST'])
+
+@auth.route('/forecast' , methods=['GET','POST'])
 def forecast():
-
   if request.method=='GET':
     return render_template("forecast.html",  predD=request.args.get('predD') , trainD=request.args.get('trainD'),
   testD=request.args.get('testD'),
@@ -134,8 +137,8 @@ def forecast():
     timescale=request.args.get('timescale'), model=request.args.get('model'), supp=g.com)
 
   if request.form['action'] == 'decomposition':
-    model.decomposition(request.args.get('trainD'),request.args.get('testD'))
-    return render_template('decompose.html', name = 'new_plot', url ='web\static\plot.png')
+    model.decomposition(request.args.get('trainD'),request.args.get('testD'),request.args.get('timescale'))
+    return render_template('decompose.html')
    
 def get_user_id(email,cur):
   sql=""" select a.uem_usr_id
@@ -173,3 +176,4 @@ where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
   res=cur.fetchall()
   ret= list(map(lambda x: x[0], res))
   return ret
+
