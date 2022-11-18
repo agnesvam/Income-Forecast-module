@@ -123,17 +123,33 @@ def income():
 def imported():
   if request.form.get('action') == "Forecast":
     uploaded= request.form['csvfile']
+    timescale= request.form.get('timescale')
+    option = request.form['options']
     data=[]
     print('got file')
     with open(uploaded) as file:
       csvfile=csv.reader(file)
       for row in csvfile:
         data.append(row)
-        print('appendedddd')
-    data=pd.DataFrame(data)
-    
-    return render_template('data.html',data=data.to_html())
+       
+    data=pd.DataFrame(data,columns=['date', 'income'])
       
+    data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d')
+    data=data.resample(model.resampling(timescale),on='date').sum()
+  
+
+    if option == 'arma':
+     predVal,trainVal,testVal=model.ARMA(data,timescale)
+     return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,timescale=timescale,model=option,data=data.to_html()))
+
+    if option == 'arima':
+     predVal,trainVal,testVal=model.ARIMA(data,timescale)
+     return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,timescale=timescale,model=option,data=data.to_html()))
+
+    if option == 'sarima':
+     predVal,trainVal,testVal=model.SARIMA(data,timescale)
+     return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,timescale=timescale,model=option,data=data.to_html()))
+    
   return render_template('import.html')
 
 
@@ -194,7 +210,3 @@ where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
   ret= list(map(lambda x: x[0], res))
   return ret
 
-def import_data():
-  print('immm')
-  file = request.files['file']
-  return file
