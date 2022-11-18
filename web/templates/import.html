@@ -1,1 +1,60 @@
-<p>jjj</p>
+<h1>logged in user id {{g.user}}</h1>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Import income</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"
+    />
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
+    ></script>
+    
+  </head>
+
+  <body>
+    <div class="hero-body">
+      <div class="container">
+        <div class="columns is-centered">
+          <div class="column is-half">
+            <form method="POST">
+              <div class="field">
+                <label class="label">Timescale</label>
+                <select class="form-control" name="timescale">
+                  <option value="year">year</option>
+                  <option value="quarter">quarter</option>
+                  <option value="month">month</option>
+                
+                </select>
+              </div>
+              <div class="field">
+                <br>Select forecasting model</br>
+                <input type="radio" name="options" id="arma" value="arma"> ARMA </input><br>
+                <input type="radio" name="options" id="arima" value="arima"> ARIMA </input><br>
+                <input type="radio" name="options" id="sarima" value="sarima"> SARIMA </input><br>
+           
+              </div>
+              <div class="field">
+                <input type ="submit" name="action">
+                <br>
+                <input type="file" id="file" name="csvfile" class="button is-success"value="Import" accept=" .csv"><br />
+                
+                <br><br>
+
+                <input type ="submit" name="action" value="Forecast", class="button is-success">
+
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  </body>
+</html>

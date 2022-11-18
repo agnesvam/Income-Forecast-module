@@ -52,7 +52,7 @@
                   <option value="year">year</option>
                   <option value="quarter">quarter</option>
                   <option value="month">month</option>
-                  <option value="week">week</option>
+         
                 </select>
               </div>
               <div class="field">
@@ -67,10 +67,9 @@
            
               </div>
               <div class="field">
-                <p class="control">
-                  <button type="submit" class="button is-success">Submit</button>
-                  <button type="submit"href="{{url_for('auth.imported')}}" class="button is-success">Import</button>
-                </p>
+                <input type ="submit" name="action" value="Forecast", class="button is-success">
+                <input type ="submit" name="action" value="Import" class="button is-success">
+            
               </div>
             </form>
           </div>

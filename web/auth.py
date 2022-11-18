@@ -1,3 +1,4 @@
+import csv
 import json
 from datetime import datetime
 from income import get_prev_income
@@ -64,7 +65,7 @@ def income():
   if not g.user:
     return redirect(url_for('auth.login'))
 
-  if request.method=='POST':
+  if request.form.get('action') == "Forecast":
     session['df']=None
     cust=request.form.get('com_select')
     timescale= request.form.get('timescale')
@@ -110,13 +111,29 @@ def income():
     if option == 'sarima':
      predVal,trainVal,testVal=model.SARIMA(df,timescale)
      return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,all=all_cust,cust=cust,timescale=timescale,model=option))
-     
+    
+  if request.form.get('action') == "Import":
+    return redirect(url_for('auth.imported'))
+
 
   coms=get_all_com()
   return render_template('loged.html', com=coms)
 
 @auth.route('/import' , methods=['GET','POST'])
 def imported():
+  if request.form.get('action') == "Forecast":
+    uploaded= request.form['csvfile']
+    data=[]
+    print('got file')
+    with open(uploaded) as file:
+      csvfile=csv.reader(file)
+      for row in csvfile:
+        data.append(row)
+        print('appendedddd')
+    data=pd.DataFrame(data)
+    
+    return render_template('data.html',data=data.to_html())
+      
   return render_template('import.html')
 
 
@@ -177,3 +194,7 @@ where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
   ret= list(map(lambda x: x[0], res))
   return ret
 
+def import_data():
+  print('immm')
+  file = request.files['file']
+  return file
