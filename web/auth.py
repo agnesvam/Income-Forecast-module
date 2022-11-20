@@ -126,16 +126,21 @@ def imported():
     timescale= request.form.get('timescale')
     option = request.form['options']
     data=[]
-    print('got file')
     with open(uploaded) as file:
       csvfile=csv.reader(file)
       for row in csvfile:
         data.append(row)
        
+    
     data=pd.DataFrame(data,columns=['date', 'income'])
-      
+    f=evaluation(data)
+    if f==0:
+      flash('Imported file can not be used', 'info')
+      return render_template('import.html')
     data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d')
+  
     data=data.resample(model.resampling(timescale),on='date').sum()
+    
   
 
     if option == 'arma':
@@ -210,3 +215,12 @@ where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
   ret= list(map(lambda x: x[0], res))
   return ret
 
+def evaluation(df):
+    if  df.shape[0] < 5:
+        return 0
+    elif isinstance(df['date'], datetime):
+        return 0
+    elif  (df['income'].any() ==''):
+      return 0
+  
+     
