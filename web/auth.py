@@ -131,9 +131,8 @@ def imported():
       for row in csvfile:
         data.append(row)
        
-    
     data=pd.DataFrame(data,columns=['date', 'income'])
-    f=evaluation(data)
+    f=income.evaluation(data)
     if f==0:
       flash('Imported file can not be used', 'info')
       return render_template('import.html')
@@ -142,7 +141,6 @@ def imported():
     data=data.resample(model.resampling(timescale),on='date').sum()
     
   
-
     if option == 'arma':
      predVal,trainVal,testVal=model.ARMA(data,timescale)
      return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,timescale=timescale,model=option,data=data.to_html()))
@@ -161,10 +159,12 @@ def imported():
 @auth.route('/forecast' , methods=['GET','POST'])
 def forecast():
   if request.method=='GET':
+    with open("out.txt", "r") as f:
+     content = f.read()
     return render_template("forecast.html",  predD=request.args.get('predD') , trainD=request.args.get('trainD'),
-  testD=request.args.get('testD'),
-  all=request.args.get('all'),cust=request.args.get('cust'), 
-  timescale=request.args.get('timescale'), model=request.args.get('model'), supp=g.com)
+    testD=request.args.get('testD'),
+    all=request.args.get('all'),cust=request.args.get('cust'), 
+    timescale=request.args.get('timescale'), model=request.args.get('model'), supp=g.com,content=content)
 
   if request.form['action'] == 'excel':
     model.to_csv(request.args.get('trainD'),request.args.get('predD'))
@@ -213,14 +213,14 @@ from   als_companies a
 where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
   res=cur.fetchall()
   ret= list(map(lambda x: x[0], res))
+  ret.insert(0, "")
   return ret
 
-def evaluation(df):
-    if  df.shape[0] < 5:
-        return 0
-    elif isinstance(df['date'], datetime):
-        return 0
-    elif  (df['income'].any() ==''):
-      return 0
+
   
+@auth.route('/sign_out')
+def sign_out():
+    session.clear()
+    return redirect(url_for('auth.login'))
+
      

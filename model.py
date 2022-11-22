@@ -1,5 +1,6 @@
 import pandas as pd
-import ast
+import ast 
+import sys
 import matplotlib.pyplot as plt
 from flask import (Blueprint, flash, g, redirect, render_template, request,
                    session, url_for)
@@ -10,14 +11,19 @@ import base64
 
 
 def ARMA (df,timescale):
+    orig_stdout = sys.stdout
+    f = open('out.txt', 'w')
+    sys.stdout = f 
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
     model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale),
                              start_P=0, seasonal=False, d=0, 
                              stepwise=True , trace=True,error_action='ignore')
-    print(model.summary())
-    print('model seasonal order', model.seasonal_order)
+    sys.stdout = orig_stdout
+    f.close()
+    #print(model.summary())
+    #print('model seasonal order', model.seasonal_order)
     pred = model.predict(n_periods=test.shape[0]+5)
 
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
@@ -36,15 +42,21 @@ def ARMA (df,timescale):
 
 
 def ARIMA(df,timescale):
+    orig_stdout = sys.stdout
+    f = open('out.txt', 'w')
+    sys.stdout = f  
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
     model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale), start_P=0, seasonal=False, d=1, D=1,  stepwise=True ,trace=True,
                              error_action='ignore')
 
+    sys.stdout = orig_stdout
+    f.close()
     pred = model.predict(n_periods=test.shape[0]+5)
-    print(model.summary())
-    print('model seasonal order', model.seasonal_order)
+    
+    #print(model.summary())
+    #print('model seasonal order', model.seasonal_order)
     pred = model.predict(n_periods=test.shape[0]+5)
 
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
@@ -61,6 +73,9 @@ def ARIMA(df,timescale):
 
 
 def SARIMA(df,timescale):
+    orig_stdout = sys.stdout
+    f = open('out.txt', 'w')
+    sys.stdout = f 
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
@@ -68,7 +83,8 @@ def SARIMA(df,timescale):
                              start_P=0, seasonal=True, d=1, D=1, trace=True,
                              error_action='ignore')
 
- 
+    sys.stdout = orig_stdout
+    f.close()
     pred = model.predict(n_periods=test.shape[0]+5)
  
     print(model.summary())

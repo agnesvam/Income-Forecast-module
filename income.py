@@ -1,4 +1,6 @@
+import datetime
 import cx_Oracle
+import pandas as pd
 
 
 #here getting previous income from DB
@@ -24,4 +26,11 @@ def get_prev_income (supp_id,timescale, all_cust, cust_name,conn):
 
 
 
-#here getting from import file
+#evaluation of imported file
+def evaluation(df):
+    if  df.shape[0] < 5:
+        return 0
+    elif isinstance(df['date'], datetime):
+        return 0
+    elif  (df['income'].any() ==''):
+      return 0

@@ -15,9 +15,7 @@
       defer
       src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
     ></script>
-    
   </head>
-
   <body>
 
 {% with messages = get_flashed_messages() %}
@@ -41,8 +39,8 @@
               <div class="field">
                 <label class="label">Customer name</label>
                 <select class="dropdown-item" name="com_select" style="color: black;" id="coms">
-                  {% for o in com %}
-                          <option value="{{ o }}">{{ o }}</option>
+                  {% for co in com %}
+                          <option value="{{ co }}">{{ co }}</option>
                   {% endfor %}
                 </select>
               </div>
@@ -67,9 +65,9 @@
            
               </div>
               <div class="field">
-                <input type ="submit" name="action" value="Forecast", class="button is-success">
+                <input type ="submit" name="action" value="Forecast" class="button is-success">
                 <input type ="submit" name="action" value="Import" class="button is-success">
-            
+                <a href="{{url_for('auth.sign_out')}}" class="button is-success" >Sign out</a>
               </div>
             </form>
           </div>
@@ -77,5 +75,9 @@
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+    <script>
+      radiobtn = document.getElementById("arma");
+      radiobtn.checked = true;
+   </script>
   </body>
 </html>
