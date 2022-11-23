@@ -25,7 +25,8 @@
     is checkbox check for all cust: {{all}}.
  
     {{ data | safe }}
-<canvas id='linechart' width= "900" height = "400"> </canvas>
+
+<canvas id='linechart'  height = "100"> </canvas>
 <script> 
 var ctx= document.getElementById("linechart").getContext("2d");
 var lineChart=new Chart(ctx,{
@@ -54,12 +55,10 @@ var lineChart=new Chart(ctx,{
             data: {{ predD | safe }},
             fill: false
         }
-        
-        
         ]
     },
      options:{
-        responsive: false,
+        responsive: true,
         scales: {
             x: {
                 ticks: {
@@ -74,11 +73,8 @@ var lineChart=new Chart(ctx,{
 
 </script>
 <pre>{{ content }}</pre>
-
-
+<br>
     <input type ="submit" name="action" value="excel", class="button is-success">
-
-
     <input type ="submit" name="action" value="decomposition" class="button is-success">
 
     <input type ="submit" name="action" value="analysis" class="button is-success">

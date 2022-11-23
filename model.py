@@ -17,8 +17,8 @@ def ARMA (df,timescale):
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale),
-                             start_P=0, seasonal=False, d=0, 
+    model=auto_arima(train, start_p=1, start_q=1, max_p=10, max_q=10, m=get_m_value(timescale),
+                            seasonal=False, d=None, 
                              stepwise=True , trace=True,error_action='ignore')
     sys.stdout = orig_stdout
     f.close()
@@ -48,7 +48,7 @@ def ARIMA(df,timescale):
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale), start_P=0, seasonal=False, d=1, D=1,  stepwise=True ,trace=True,
+    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale), seasonal=True, d=None,  D=1, stepwise=True ,trace=True,
                              error_action='ignore')
 
     sys.stdout = orig_stdout
@@ -79,16 +79,16 @@ def SARIMA(df,timescale):
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale),
-                             start_P=0, seasonal=True, d=1, D=1, trace=True,
+    model=auto_arima(train, start_p=0, start_q=0, max_p=10, max_q=10, m=get_m_value(timescale),
+                             start_P=0, seasonal=True, d=1, D=2, trace=True,
                              error_action='ignore')
 
     sys.stdout = orig_stdout
     f.close()
     pred = model.predict(n_periods=test.shape[0]+5)
  
-    print(model.summary())
-    print('model seasonal order', model.seasonal_order)
+    # print(model.summary())
+    # print('model seasonal order', model.seasonal_order)
     pred = model.predict(n_periods=test.shape[0]+5)
 
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()

@@ -11,10 +11,12 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"
     />
+
     <script
       defer
       src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"
     ></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
   </head>
   <body>
 
@@ -65,11 +67,11 @@
            
               </div>
               <div class="field">
-                <input type ="submit" name="action" value="Forecast" class="button is-success">
+                <input type ="submit" name="action" value="Forecast" class="button is-success"onclick="$('#loading').show();">
                 <input type ="submit" name="action" value="Import" class="button is-success">
                 <a href="{{url_for('auth.sign_out')}}" class="button is-success" >Sign out</a>
-              </div>
-            </form>
+             </div>
+            </form><div id="loading" style="display:none;"><img src="{{url_for('static', filename='loading.gif')}}" alt="" /></div>
           </div>
         </div>
       </div>

@@ -30,7 +30,7 @@ def get_prev_income (supp_id,timescale, all_cust, cust_name,conn):
 def evaluation(df):
     if  df.shape[0] < 5:
         return 0
-    elif isinstance(df['date'], datetime):
+    elif isinstance(df['date'], datetime.datetime):
         return 0
     elif  (df['income'].any() ==''):
       return 0

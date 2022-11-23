@@ -12,6 +12,7 @@ from flask import (Blueprint, flash, g, redirect, render_template, request,
 from pmdarima.arima import auto_arima
 
 import income
+from income import evaluation
 import model
 
 cx_Oracle.init_oracle_client(lib_dir=r"C:\Oracle\product\19.0.0\client_1\bin")
@@ -132,7 +133,7 @@ def imported():
         data.append(row)
        
     data=pd.DataFrame(data,columns=['date', 'income'])
-    f=income.evaluation(data)
+    f=evaluation(data)
     if f==0:
       flash('Imported file can not be used', 'info')
       return render_template('import.html')
