@@ -17,15 +17,9 @@
   
 
     <form method="POST">
-    Customer  {{ cust }}.
-    Timescale {{ timescale }}.
-    Forecast model {{ model }}.
-    Logged in supplier id {{ supp }}.
- 
-    is checkbox check for all cust: {{all}}.
- 
-    {{ data | safe }}
-
+    <b>Customer:</b>  {{ cust }} <br>
+    <b>Timescale:</b> {{ timescale }}<br>
+    <b>Forecast model:</b> {{ model }}<br> 
 <canvas id='linechart'  height = "100"> </canvas>
 <script> 
 var ctx= document.getElementById("linechart").getContext("2d");
@@ -69,8 +63,6 @@ var lineChart=new Chart(ctx,{
         }
     }
 });
-
-
 </script>
 <pre>{{ content }}</pre>
 <br>
@@ -80,7 +72,7 @@ var lineChart=new Chart(ctx,{
     <input type ="submit" name="action" value="analysis" class="button is-success">
 
 </form>
-
+<br>
 {% with messages = get_flashed_messages() %}
 {% if messages %}
 {% for msg in messages %}

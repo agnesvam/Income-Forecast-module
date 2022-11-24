@@ -81,7 +81,7 @@ def income():
 
     if (all_cust==1) and (cust != ''):
       flash('If customer is chosen- total for customers checkbox should not be checked', 'info')
-      return render_template('loged.html',com=coms)
+      return render_template('logged.html',com=coms)
 
 
     #function to get previous income
@@ -92,14 +92,14 @@ def income():
 
     if len(re) ==0:
         flash('Not enough info', 'info')
-        return render_template('loged.html', com=coms)
+        return render_template('logged.html', com=coms)
 
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
     df=df.resample(model.resampling(timescale),on='date').sum()
   
     if  df.shape[0] < 5:
         flash('Not enough info')
-        return render_template('loged.html',com=coms)
+        return render_template('logged.html',com=coms)
       
     if option == 'arma':
      predVal,trainVal,testVal=model.ARMA(df,timescale)
@@ -118,7 +118,7 @@ def income():
 
 
   coms=get_all_com()
-  return render_template('loged.html', com=coms)
+  return render_template('logged.html', com=coms)
 
 @auth.route('/import' , methods=['GET','POST'])
 def imported():
