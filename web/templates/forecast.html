@@ -13,9 +13,6 @@
     /> 
 </head>
 <body>
-
-  
-
     <form method="POST">
     <b>Customer:</b>  {{ cust }} <br>
     <b>Timescale:</b> {{ timescale }}<br>
@@ -68,9 +65,9 @@ var lineChart=new Chart(ctx,{
 <br>
     <input type ="submit" name="action" value="excel", class="button is-success">
     <input type ="submit" name="action" value="decomposition" class="button is-success">
-
     <input type ="submit" name="action" value="analysis" class="button is-success">
-
+    <a href="{{url_for('auth.income')}}" class="button is-success" >back</a>
+  
 </form>
 <br>
 {% with messages = get_flashed_messages() %}

@@ -2,12 +2,9 @@ import pandas as pd
 import ast 
 import sys
 import matplotlib.pyplot as plt
-from flask import (Blueprint, flash, g, redirect, render_template, request,
-                   session, url_for)
 from pmdarima.arima import auto_arima
 import statsmodels.api as sm
-import io
-import base64
+
 
 
 def ARMA (df,timescale):
@@ -48,7 +45,7 @@ def ARIMA(df,timescale):
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
-    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale), seasonal=True, d=None,  D=1, stepwise=True ,trace=True,
+    model=auto_arima(train, start_p=0, start_q=0, max_p=4, max_q=4, m=get_m_value(timescale), seasonal=True, d=None, D=1, stepwise=True ,trace=True,
                              error_action='ignore')
 
     sys.stdout = orig_stdout

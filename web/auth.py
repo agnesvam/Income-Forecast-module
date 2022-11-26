@@ -23,16 +23,13 @@ auth = Blueprint('auth', __name__)
 
 @auth.before_request
 def before_request():
-
   if 'user_id' in session and 'com_id' in session:
-    #check if user id exists in useers
     g.user=session['user_id']
     g.com= session['com_id']
 
 
 @auth.route('/login', methods=['GET','POST'])
 def login():
-  
     if request.method=='POST':
         session.pop('user_id',None)
         company=request.form.get('com_select')
@@ -41,7 +38,6 @@ def login():
 
         usr_id= get_user_id(user_email,cur)
         com_id=get_com_id( company,cur)
-
         outVal=cur.var(int)
         sql="""
    begin
@@ -57,9 +53,8 @@ def login():
            return redirect(url_for('auth.income'))
         else:
           return redirect(url_for('auth.login'))
-       
     coms=get_all_com()
-    return render_template("login.html", com=coms )
+    return render_template("login.html", com=coms)
         
 @auth.route('/income' , methods=['GET','POST'])
 def income():
@@ -67,11 +62,10 @@ def income():
     return redirect(url_for('auth.login'))
 
   if request.form.get('action') == "Forecast":
-    session['df']=None
+   
     cust=request.form.get('com_select')
     timescale= request.form.get('timescale')
     option = request.form['options']
-    #all companies for dropdown/
     coms=get_all_com()
 
     if request.form.get('all_cust'):
@@ -89,7 +83,6 @@ def income():
     idx = [x[0] for x in re]
     vals = [x[1] for x in re]
     df=pd.DataFrame({'date':idx, 'income':vals})
-
     if len(re) ==0:
         flash('Not enough info', 'info')
         return render_template('logged.html', com=coms)
@@ -206,12 +199,9 @@ where  a.com_name like :com_name
 
 def get_all_com():
   cur=conn.cursor()
-  cur.execute("""select 
-      regexp_replace(a.com_name,
-                      '[^\r -~]',
-                      '')
-from   als_companies a
-where   (a.com_status = 'VER' or a.com_status = 'ACT')""")
+  cur.execute("""select regexp_replace(a.com_name, '[^\r -~]','')
+from als_companies a
+where (a.com_status = 'VER' or a.com_status = 'ACT')""")
   res=cur.fetchall()
   ret= list(map(lambda x: x[0], res))
   ret.insert(0, "")
