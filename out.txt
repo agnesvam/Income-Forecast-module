@@ -1,14 +1,28 @@
 Performing stepwise search to minimize aic
- ARIMA(1,0,1)(0,0,0)[0]             : AIC=inf, Time=0.09 sec
- ARIMA(0,0,0)(0,0,0)[0]             : AIC=139.420, Time=0.01 sec
- ARIMA(1,0,0)(0,0,0)[0]             : AIC=131.675, Time=0.03 sec
- ARIMA(0,0,1)(0,0,0)[0]             : AIC=136.217, Time=0.06 sec
- ARIMA(2,0,0)(0,0,0)[0]             : AIC=133.410, Time=0.09 sec
- ARIMA(2,0,1)(0,0,0)[0]             : AIC=inf, Time=0.14 sec
- ARIMA(1,0,0)(0,0,0)[0] intercept   : AIC=129.410, Time=0.03 sec
- ARIMA(0,0,0)(0,0,0)[0] intercept   : AIC=127.603, Time=0.01 sec
- ARIMA(0,0,1)(0,0,0)[0] intercept   : AIC=129.289, Time=0.10 sec
- ARIMA(1,0,1)(0,0,0)[0] intercept   : AIC=inf, Time=0.20 sec
+ ARIMA(0,0,0)(1,1,1)[4] intercept   : AIC=388.845, Time=1.44 sec
+ ARIMA(0,0,0)(0,1,0)[4] intercept   : AIC=395.315, Time=0.08 sec
+ ARIMA(1,0,0)(1,1,0)[4] intercept   : AIC=388.218, Time=0.60 sec
+ ARIMA(0,0,1)(0,1,1)[4] intercept   : AIC=inf, Time=1.02 sec
+ ARIMA(0,0,0)(0,1,0)[4]             : AIC=393.315, Time=0.08 sec
+ ARIMA(1,0,0)(0,1,0)[4] intercept   : AIC=397.292, Time=0.30 sec
+ ARIMA(1,0,0)(2,1,0)[4] intercept   : AIC=389.317, Time=0.62 sec
+ ARIMA(1,0,0)(1,1,1)[4] intercept   : AIC=389.351, Time=1.69 sec
+ ARIMA(1,0,0)(0,1,1)[4] intercept   : AIC=inf, Time=0.77 sec
+ ARIMA(1,0,0)(2,1,1)[4] intercept   : AIC=391.157, Time=2.17 sec
+ ARIMA(0,0,0)(1,1,0)[4] intercept   : AIC=387.319, Time=0.61 sec
+ ARIMA(0,0,0)(2,1,0)[4] intercept   : AIC=388.988, Time=1.00 sec
+ ARIMA(0,0,0)(0,1,1)[4] intercept   : AIC=inf, Time=0.61 sec
+ ARIMA(0,0,0)(2,1,1)[4] intercept   : AIC=inf, Time=1.62 sec
+ ARIMA(0,0,1)(1,1,0)[4] intercept   : AIC=388.696, Time=0.79 sec
+ ARIMA(1,0,1)(1,1,0)[4] intercept   : AIC=388.912, Time=1.05 sec
+ ARIMA(0,0,0)(1,1,0)[4]             : AIC=385.322, Time=0.18 sec
+ ARIMA(0,0,0)(2,1,0)[4]             : AIC=387.017, Time=0.33 sec
+ ARIMA(0,0,0)(1,1,1)[4]             : AIC=inf, Time=0.67 sec
+ ARIMA(0,0,0)(0,1,1)[4]             : AIC=inf, Time=0.24 sec
+ ARIMA(0,0,0)(2,1,1)[4]             : AIC=inf, Time=0.60 sec
+ ARIMA(1,0,0)(1,1,0)[4]             : AIC=386.238, Time=0.34 sec
+ ARIMA(0,0,1)(1,1,0)[4]             : AIC=386.699, Time=0.38 sec
+ ARIMA(1,0,1)(1,1,0)[4]             : AIC=386.974, Time=0.81 sec
 
-Best model:  ARIMA(0,0,0)(0,0,0)[0] intercept
-Total fit time: 0.768 seconds
+Best model:  ARIMA(0,0,0)(1,1,0)[4]          
+Total fit time: 18.025 seconds

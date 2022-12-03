@@ -126,15 +126,14 @@ def imported():
         data.append(row)
        
     data=pd.DataFrame(data,columns=['date', 'income'])
-    f=evaluation(data)
-    if f==0:
+    evaluated=evaluation(data)
+    if evaluated==0:
       flash('Imported file can not be used', 'info')
       return render_template('import.html')
+      
     data['date'] = pd.to_datetime(data['date'], format='%Y-%m-%d')
-  
     data=data.resample(model.resampling(timescale),on='date').sum()
     
-  
     if option == 'arma':
      predVal,trainVal,testVal=model.ARMA(data,timescale)
      return redirect(url_for('auth.forecast',predD=predVal,trainD=trainVal,testD=testVal,timescale=timescale,model=option,data=data.to_html()))
@@ -150,11 +149,18 @@ def imported():
   return render_template('import.html')
 
 
+def format_c(content,model):
+  content=content.replace('ARIMA', model)
+  return content
+  
+
 @auth.route('/forecast' , methods=['GET','POST'])
 def forecast():
   if request.method=='GET':
     with open("out.txt", "r") as f:
      content = f.read()
+    content= format_c(content,request.args.get('model'))
+
     return render_template("forecast.html",  predD=request.args.get('predD') , trainD=request.args.get('trainD'),
     testD=request.args.get('testD'),
     all=request.args.get('all'),cust=request.args.get('cust'), 
