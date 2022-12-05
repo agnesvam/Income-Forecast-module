@@ -1,11 +1,12 @@
+import itertools
+import numpy as np
 import pandas as pd
 import ast 
 import sys
 import matplotlib.pyplot as plt
 from pmdarima.arima import auto_arima
 import statsmodels.api as sm
-
-
+from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, mean_squared_error
 
 def ARMA (df,timescale):
     orig_stdout = sys.stdout
@@ -19,9 +20,11 @@ def ARMA (df,timescale):
                              stepwise=True , trace=True,error_action='ignore')
     sys.stdout = orig_stdout
     f.close()
-    #print(model.summary())
-    #print('model seasonal order', model.seasonal_order)
     pred = model.predict(n_periods=test.shape[0]+5)
+ 
+    f = open("demo.txt", "w")
+    f.write(str(model.summary()))
+    f.close()
 
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
     testVal = dict(map(lambda i,j : (i,j) , TestKeys,list(test['income'])))
@@ -52,10 +55,10 @@ def ARIMA(df,timescale):
     f.close()
     pred = model.predict(n_periods=test.shape[0]+5)
     
-    #print(model.summary())
-    #print('model seasonal order', model.seasonal_order)
-    pred = model.predict(n_periods=test.shape[0]+5)
-
+    print(model.summary())
+    f = open("demo.txt", "w")
+    f.write(str(model.summary()))
+    f.close()
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
     testVal = dict(map(lambda i,j : (i,j) , TestKeys,list(test['income'])))
 
@@ -84,10 +87,14 @@ def SARIMA(df,timescale):
     f.close()
     pred = model.predict(n_periods=test.shape[0]+5)
  
-    # print(model.summary())
-    # print('model seasonal order', model.seasonal_order)
-    pred = model.predict(n_periods=test.shape[0]+5)
 
+    print(model.summary())
+    f = open("demo.txt", "w")
+    f.write(str(model.summary()))
+    f.close()
+
+    # print('model seasonal order', model.seasonal_order)
+    
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
     testVal = dict(map(lambda i,j : (i,j) , TestKeys,list(test['income'])))
 
@@ -140,8 +147,32 @@ def decomposition(df,df1,timescale):
     
     df['date'] = (pd.to_datetime(df['date'], format='%Y-%m-%d'))
     df=df.resample(resampling(timescale),on='date').sum()
-    #print(df)
+   
     decomp=sm.tsa.seasonal_decompose(df, model='additive',period=1)
     fig=decomp.plot()
     plt.savefig('web\static\plot.png')
     
+
+def analyse_accuracy(df_test, df_pred,timescale):
+    
+    T=ast.literal_eval(df_test)
+    P=ast.literal_eval(df_pred)
+    test_size = int(len(T) )
+    P = dict(itertools.islice(P.items(),test_size))
+
+
+    df_test= pd.DataFrame(T.items(),columns=['date', 'income'])
+    df_pred=pd.DataFrame(P.items(),columns=['date', 'income'])
+    df_test['date'] = (pd.to_datetime(df_test['date'], format='%Y-%m-%d'))
+    df_pred['date'] = (pd.to_datetime(df_pred['date'], format='%Y-%m-%d'))
+    
+    df_test=df_test.resample(resampling(timescale),on='date').sum()
+    df_pred=df_pred.resample(resampling(timescale),on='date').sum()
+   
+
+    mae = mean_absolute_error(df_test, df_pred)
+    mape = mean_absolute_percentage_error(df_test, df_pred)
+    rmse = np.sqrt(mean_squared_error(df_test, df_pred))
+
+    return mae,mape,rmse
+

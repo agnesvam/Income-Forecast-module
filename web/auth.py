@@ -177,6 +177,24 @@ def forecast():
   if request.form['action'] == 'decomposition':
     model.decomposition(request.args.get('trainD'),request.args.get('testD'),request.args.get('timescale'))
     return render_template('decompose.html')
+
+  if request.form['action'] == 'analysis':
+    mae,mape,rmse= model.analyse_accuracy(request.args.get('testD'),request.args.get('predD'),request.args.get('timescale'))
+
+    with open("demo.txt", "a") as f:
+      f.write("\n mean absolute error (MAE) : " + str(mae))
+      f.write("\n mean absolute percentage error (MAPE) : " + str(mape))
+      f.write("\n mean squared error (RMSE) : " + str(rmse))
+
+    with open("demo.txt", "r") as f:
+      cont = f.read()
+
+    return render_template("forecast.html",  predD=request.args.get('predD') , trainD=request.args.get('trainD'),
+    testD=request.args.get('testD'),
+    all=request.args.get('all'),cust=request.args.get('cust'), 
+    timescale=request.args.get('timescale'), model=request.args.get('model'), supp=g.com,summary=cont)
+    
+
    
 def get_user_id(email,cur):
   sql=""" select a.uem_usr_id
