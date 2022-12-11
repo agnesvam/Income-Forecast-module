@@ -1,17 +1,10 @@
 import csv
-import json
-from datetime import datetime
 from income import get_prev_income
 import cx_Oracle
-import numpy as np
 import pandas as pd
-import plotly
-import plotly.express as px
 from flask import (Blueprint, flash, g, redirect, render_template, request,
                    session, url_for)
-from pmdarima.arima import auto_arima
 
-import income
 from income import evaluation
 import model
 
@@ -185,10 +178,8 @@ def forecast():
       f.write("\n mean absolute error (MAE) : " + str(mae))
       f.write("\n mean absolute percentage error (MAPE) : " + str(mape))
       f.write("\n mean squared error (RMSE) : " + str(rmse))
-
     with open("demo.txt", "r") as f:
       cont = f.read()
-
     return render_template("forecast.html",  predD=request.args.get('predD') , trainD=request.args.get('trainD'),
     testD=request.args.get('testD'),
     all=request.args.get('all'),cust=request.args.get('cust'), 
