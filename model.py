@@ -76,25 +76,19 @@ def SARIMA(df,timescale):
     orig_stdout = sys.stdout
     f = open('out.txt', 'w')
     sys.stdout = f 
+
     train_size = int(len(df) * 0.8)
     train = df[0:train_size]
     test=df[train_size:]
     model=auto_arima(train, start_p=0, start_q=0, max_p=10, max_q=10, m=get_m_value(timescale),
                              start_P=0, seasonal=True, d=1, D=2, trace=True,
                              error_action='ignore')
-
     sys.stdout = orig_stdout
     f.close()
     pred = model.predict(n_periods=test.shape[0]+5)
- 
-
-    print(model.summary())
     f = open("demo.txt", "w")
     f.write(str(model.summary()))
     f.close()
-
-    # print('model seasonal order', model.seasonal_order)
-    
     TestKeys=(pd.to_datetime(test.index.values , format='%Y-%m-%d')).astype(str).tolist()
     testVal = dict(map(lambda i,j : (i,j) , TestKeys,list(test['income'])))
 
