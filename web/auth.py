@@ -31,20 +31,22 @@ def login():
 
         usr_id= get_user_id(user_email,cur)
         com_id=get_com_id( company,cur)
-        outVal=cur.var(int)
+        outVal=cur.var(str)
         sql="""
    begin
-     :outVal := sys.diutil.bool_to_int(als_stat.can_run_report
-     (:rep,:com,:usr));
+     :outVal := als_usr.user_roles_str (:usr,:com);
    end;
   """
-        cur.execute(sql,outVal=outVal,rep='INCOME', com=com_id,usr=usr_id)
-
-        if outVal.getvalue()==1 :
+        cur.execute(sql,outVal=outVal,com=com_id,usr=usr_id)
+        roles=outVal.getvalue()
+        li= ['Administrator', 'General director', 'Financial manager', 'Director']
+        if roles is not None: 
+         if any(word in roles for word in li):
+        # outVal.getvalue()==1 :
            session['user_id']= usr_id
            session['com_id'] =com_id
            return redirect(url_for('auth.income'))
-        else:
+         else:
           return redirect(url_for('auth.login'))
     coms=get_all_com()
     return render_template("login.html", com=coms)
