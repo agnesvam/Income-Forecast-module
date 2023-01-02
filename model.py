@@ -8,6 +8,7 @@ from pmdarima.arima import auto_arima
 import statsmodels.api as sm
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error, mean_squared_error
 
+pd.options.display.float_format = '{:.4f}'.format
 def ARMA (df,timescale):
     orig_stdout = sys.stdout
     f = open('out.txt', 'w')
@@ -165,7 +166,8 @@ def analyse_accuracy(df_test, df_pred,timescale):
    
 
     mae = mean_absolute_error(df_test, df_pred)
-    mape = mean_absolute_percentage_error(df_test, df_pred)
+ #   mape = mean_absolute_percentage_error(df_test['income'], df_pred['income'])
+    mape=np.mean(np.abs((df_test['income'] -  df_pred['income']) / df_test['income'])) * 100
     rmse = np.sqrt(mean_squared_error(df_test, df_pred))
 
     return mae,mape,rmse
