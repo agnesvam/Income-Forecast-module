@@ -10,7 +10,7 @@ import model
 
 cx_Oracle.init_oracle_client(lib_dir=r"C:\Oracle\product\19.0.0\client_1\bin")
 dsn_tns = cx_Oracle.makedsn('127.0.0.1', '4000', service_name='XE') 
-conn = cx_Oracle.connect(user=r'alcs', password='alcs', dsn=dsn_tns)
+conn = cx_Oracle.connect(user=r'x', password='x', dsn=dsn_tns)
 
 auth = Blueprint('auth', __name__)
 
